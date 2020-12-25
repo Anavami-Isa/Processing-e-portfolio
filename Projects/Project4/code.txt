@@ -1,0 +1,41 @@
+int numSegments;
+int segmentSize;
+void setup() {
+  numSegments = 3;
+  size(600, 600);
+  segmentSize = width / numSegments;
+}
+void draw() { 
+  background(255);
+  drawGrid();
+  drawBlackBlock();
+  showMouse();
+}
+
+void drawGrid() {
+ strokeWeight(1);
+ stroke(#E4E5CE);
+ // for loop that makes one horizontal line and one vertical line for every segment that fits in a row 
+ //(ie if there are 3 segments in the first row, 9 lines are drawn since the window is a square) 
+ for (int i = 1; i < numSegments + 1; i++) {
+   line(0, segmentSize * i, width, segmentSize * i); // creates horizontal line segment
+   line(segmentSize * i, 0, segmentSize * i, height); // cretaes vertical line segment
+ }
+}
+
+void drawBlackBlock() {
+  // two int variables(x and y) that divide the window into numSegments ^ 2 compartments
+  int x = mouseX / segmentSize; // x position of the blocks
+  int y = mouseY / segmentSize; // y position of the blocks
+  // black rectangles are made at the x and y coordinates and the size of these rectangles is width/numSegments
+  fill(0);
+  rect(x * segmentSize, y * segmentSize, segmentSize, segmentSize);
+}
+
+void showMouse() {
+  noStroke();
+  // makes a yellow cirlce that follows the mouse by taking the x and y coordinates of the mouse
+  fill(#F7FF1C);
+  // the size of the cirlce is proportional to the size of the blocks
+  ellipse(mouseX, mouseY, segmentSize / 10, segmentSize / 10);
+}

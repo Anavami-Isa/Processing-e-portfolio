@@ -1,0 +1,3 @@
+This e-portfolio was created to showcase all of the project that we have completed this semester in this course. This portfolio includes projects that we worked on outside of class, in class and as classwork assignments. 
+While creating this portfolio, I came across a few obstacles. The biggest obsatacle that I had to overcome was the translation of the Processing files into p5.js. This was particularly difficult because I used some methods that were not available in p5.js and even prevented me from using the Proseccsing2JS converter. 
+Another obstacle that I faced was learning HTML and CSS in order to build the website that would hold my e-portfolio. I found this to be cumbersome, but eventually it became easier because I have worked with HTML and CSS before.

@@ -1,0 +1,125 @@
+float originX; // this variable stores the x position of the origin
+float originY; // this variable stores the y position of the origin
+int graphHeight; // the height of the graph
+
+void setup() {
+ size(400, 800);
+ fill(255);
+ graphHeight = height / 2; // this makes the graph half the height of the window
+ rect(0,0, width, graphHeight); // rectangle for the backrgound of the graph
+   originX = width / 2; // X origin
+   originY = graphHeight / 2; // Y origin
+ graphInfo();
+}
+// initial settings
+// r = a * sin(k * theta)
+float a = 10; // this variable holds the value of the a coefficent 
+float theta = -2 * 3.1415926;
+float scale = 10; 
+float dx = 0.001; // the distance between each ellipse
+int k = 20; // initial value of k
+//slider details
+int sliderHeight = 100; // stores the height of eaach slider
+int slider01 = 80; // initial value of the first slider
+int slider02 = 185; // initial value of the second slider
+
+void draw() {
+  // creates the graph and sliders 
+    stroke(0);
+    Rhondea(); // this function actually draws the curve
+    MainBar(graphHeight, sliderHeight, a, k); // this creates the mainbar that is below the graph and contains the name of the graph, the equation and the reset button
+    // k
+      slider01 = slider(slider01, graphHeight + sliderHeight, sliderHeight, "k: ", (((slider01 - 50) / 15) + 1)); // this is the first slider. It manipulates the value of k
+      k = ((slider01 - 50)/ 15) + 1; // makes the value of k have a range of 1 to 20
+    // a
+      slider02 = slider(slider02, graphHeight + sliderHeight * 2, sliderHeight, "a: ", (((slider02 - 50) / 15) + 1)); // this is the second slider. It manipulates the value of a.
+      a = ((slider02 - 50)/ 15) + 1; // makes the value of a to have a range of 1 to 20
+}
+
+void Rhondea() {
+  for (int i = 0; i < 10; i++) { // this for loop is here to speed up the drawing process. It allows for 10 ellipses to be drawn every time the draw() method is run instead of just 1
+    float r = a * sin(k * theta); 
+    float x = scale * r * cos(theta);
+    float y = scale * r * sin(theta);
+    fill(0);
+    ellipse(originX + x, originY -y, 1, 1); // draws each individual point that makes up the curve
+    theta += dx; // changes the value of theta by the increment dx
+  }
+}
+
+void MainBar(int startingPoint, int ht, float a, int k) {
+  strokeWeight(2);
+  fill(#ADE0FF);
+  rect(0, startingPoint, width, ht); // sets the area of the main bar
+  reset(((width * 3)/ 4), ht, startingPoint); // method that creates the reset button
+  fill(0);
+  textSize(ht / 7);
+  // static equation of the curve
+  String ans = "Rhondea Curve: r = a * sin(k * theta)";
+  text(ans, width / 20, startingPoint + (ht / 4));
+  // dynamic equation of the curve
+  String ans01 = "r = " + str(a) + " * sin(" + str(k) + "  * pi)";
+  text(ans01 , width / 20, startingPoint + ((ht * 2) / 4));
+}
+
+void reset(int startingWidth, int ht, int startingPoint) {
+  fill(#F72828);
+  rect(startingWidth, startingPoint, width, ht); // sets the area of the button
+  fill(255);
+  textSize(startingWidth * 2/30);
+  text("RESET", startingWidth + (width / 20), startingPoint + (width / 20));
+  // if statements that activate the button only when the mouse is pressed and inside of the area of the button
+  if (mousePressed) {
+    if (mouseX > startingWidth && mouseX < width && mouseY > startingPoint && mouseY < startingPoint + ht) {
+      // resets the value of these sliders and clears the graph
+      slider01 = 80;
+      slider02 = 185;
+      rect(0,0, width, graphHeight);
+      graphInfo();
+    }
+  }
+}
+
+int slider(int slider, int startPoint, int ht, String title, float title02) {
+  int x = slider;
+  fill(#D1EEFF);
+  rect(0, startPoint, width, ht); // creates area for the slider
+  strokeWeight(ht / 20);
+  line((width / 8), startPoint + ht / 2, width - (width / 8), startPoint + ht / 2); // creates line for the slider
+  strokeWeight(3);
+  fill(#FF0808);
+  // changes the value of x if the mouse is pressed within the slider area
+  if(mousePressed){
+   if(mouseX < (width - (width / 8)) && mouseX > (width / 8) && mouseY > startPoint && mouseY < (startPoint + ht)) {
+     x = mouseX;
+   }
+  }
+  ellipse(x, startPoint + ht / 2, ht / 4, ht / 4); // circle used to show the value of the slider
+  strokeWeight(1);
+  // checks to see if the value of x has changed and resets the graph if it has
+  if(x != slider) {
+    fill(255);
+    rect(0,0, width, graphHeight);
+    graphInfo();
+  }
+  fill(0);
+  slider = x;
+  // creates title for the slider
+  String result = title + title02;
+  textSize(ht / 5);
+  text(result, width / 20 , startPoint + (ht / 4));
+  return slider;
+}
+
+void graphInfo() {
+    // create the grpah
+    stroke(#AAAAAA);
+    line(0, originY, graphHeight, originY);
+    line(originX, 0, originX, width);
+    fill(#F51E1E);
+    // add the x and y axis label to the graph
+      textSize(15);
+      text("Y", width / 2, graphHeight / 15);
+      text("X", width / 15, graphHeight / 2);
+    stroke(0);
+}

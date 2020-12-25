@@ -1,0 +1,29 @@
+int square1X;
+int square2X;
+int square1Y;
+int square2Y;
+void setup() {
+  size(600, 600);
+  square1X = 0;
+  square2X = width - 50;
+  square1Y = 0;
+  square2Y = 0;
+}
+
+void draw() {
+  background(31, 147, 38);
+  fill(24, 60, 224);
+  rect(square1X, square1Y, 50, 50);
+  fill(222, 40, 40);
+  rect(square2X, square2Y, 50, 50);
+  square1Y += 5;
+  square2Y += 5;
+  square1X += 5;
+  square2X -= 5;
+  if (keyPressed) {
+    square1X = 0;
+    square2X = width - 50;
+    square1Y = 0;
+    square2Y = 0;
+  }
+}
