@@ -1,0 +1,101 @@
+float m = 2;
+float b = -20;
+float pX = 450;
+float pY = 400;
+
+float myX = 600;
+int RADIUS = 10;
+int c1 = 400; // x coordinate of the circle
+int c2 = 400; // y coordinate of the circle
+int dia = 200; // diameter of the circle
+
+boolean ready = false;
+
+void setup() {
+  size(800, 800);
+  fill(100, 140, 40);
+  rectMode(CENTER);
+}
+
+void draw() {
+  background(255);
+  stroke(1);
+  circle(c1, c2,dia);
+  // displays the commands
+  textSize(10);
+  text("Spacebar - reset", 10, 10);
+  text("UP Arrow - move up", 10, 30);
+  text("DOWN Arrow - move down", 10, 50);
+  text("LEFT Arrow - move left", 10, 70);
+  text("RIGHT Arrow - move right", 10, 90);
+  text("W - increase size", 10, 110);
+  text("D - decrease size", 10, 130);
+  if (ready)
+  {
+    rect(pX, pY, RADIUS, RADIUS);
+    //Find a point on the line
+    for (int mattX = 0; mattX < 1000; mattX+=5)
+    {
+      float mattY = -1 * sqrt((dia/2)* (dia/2) - (mattX - c1)* (mattX - c1)) + c2; // equation  for the top half of the circle
+      float mattY01 = sqrt((dia/2)* (dia/2) - (mattX - c1)* (mattX - c1)) + c2; // equation for the bottom half of the circle
+
+      float  M = (mattY - pY)/(mattX - pX); // slope of the line
+      float  M01 = (mattY01 - pY)/(mattX - pX); // slope of the line
+
+      //Find the midpoint of the segment
+      float midX = (mattX + pX) / 2.0; // x-coordinate of the midpoint of the line
+      float midY = (mattY + pY) / 2.0; // y-coordinate of the mdpoint of the lline
+      float midY01 = (mattY01 + pY) / 2.0; // new y coordinate of teh midpoint(for bottom half of the circle)
+
+      //Find the equation of the perpendicular line through the midpoint
+      float newM = -1/M;
+      float newM01 = -1/M01;
+      float x1 = 0;
+      float y1 = newM*( x1 - midX) + midY;
+      float y01 = newM01*( x1 - midX) + midY01;
+      float x2 = width;
+      float y2 = newM*( x2 - midX) + midY;
+      float y02 = newM01*( x2 - midX) + midY01;
+
+      //Draw the line
+      stroke(0, 0, 200);
+      line(x1, y1, x2, y2); // creates lines for top half
+      line(x1, y01, x2, y02); // creates lines for bottom half
+    }
+  }
+}
+
+
+void mousePressed(){
+  pX = mouseX;
+  pY = mouseY;
+  ready = true;
+}
+
+  void keyPressed(){
+    if (key == ' ') { // resets the window
+      background(255);
+      ready = false;
+      c1 = 400;
+      c2 = 400;
+     dia = 200;
+    }
+    if (keyCode == UP) { // moves the circle up
+      c2 -= 3;
+    }
+    if (keyCode == DOWN) { // moves the circle down
+      c2 += 3;
+    }
+    if (keyCode == LEFT) { // moves the circle left
+      c1 -= 3;
+    }
+    if (keyCode == RIGHT) { // moves the circle right
+      c1 += 3;
+    }
+    if (key == 'a') { // stretches the circle
+     dia += 3;
+    }
+    if (key == 'd') { // shrinks the circle
+     dia -= 3;
+    }
+  }

@@ -1,0 +1,178 @@
+int centerX;
+int centerY;
+void setup() {
+ size(1000,1000); 
+ centerX = width / 2;
+ centerY = height / 2;
+}
+// number to determine how off-center the mouse is
+  float XmainParallax = 0;
+  float YmainParallax = 0;
+int x = 500; // varible that contiains the value for the position of the sun or moon
+int night = 0; // int that is used to change the sky from day to night. When it is odd it is night and it is day when it is even
+void draw() {
+// foreground
+  // when using these variables, the selected object moves 1 pixel for every 4 pixels the cursor moves, which is the fastest setting. These variables will be used by objects that are in the foraeground and close to the camera
+  float Xparallax01 = .25 * XmainParallax;
+  float Yparallax01 = .25 * YmainParallax;
+// middleground
+  // when using these variables, the selected object moves at 0.15 times the speed of the cursor. These are to be used by objects that are in the middleground
+  float Xparallax02 = .15 * XmainParallax;
+  float Yparallax02 = .15 * YmainParallax;
+// background
+  // when using these varibles, the selected object moves at 0.1 times the speed of the cursor. These are to be used by onjects that are in the background
+  float Xparallax03 = .1 * XmainParallax;
+  float Yparallax03 = .1 * YmainParallax;
+// further in background
+  // when using these variables, the selected object moves at 0.05 times the speed of the cursor. These are to be used by objects that are far in the background
+  float Xparallax04 = .05 * XmainParallax;
+  float Yparallax04 = .05 * YmainParallax;
+  
+  strokeWeight(1);
+  background(82, 138, 255);
+  // sun
+    sun(int(Yparallax03));
+  // cloud 1
+    cloud(int(700 + Xparallax03), int(100 + Yparallax03));
+  // cloud 2
+    cloud(int(440 + Xparallax04), int(270 + Yparallax04));
+  // bird 1
+    bird(int(150 + Xparallax02), int(200 + Yparallax02));
+  // bird 2
+    bird(int(550 + Xparallax03), int(70 + Yparallax03));
+  // bird 3
+    bird(int(850 + Xparallax04), int(150 + Yparallax04));
+  // ground
+    fill(57, 107, 12);
+    ellipse(int(350 + Xparallax04), int(550 + Yparallax04), 800, 400); // ground in the back
+    fill(#52CB1F);
+    ellipse(int(900 + Xparallax03), int(600 + Yparallax03), 1000, 600); // ground on the right
+    fill(#AEF21D);
+    ellipse(int(Xparallax02), int(740 + Yparallax02), 1800, 700); // ground that is off to the left
+    fill(20, 131, 11);
+    ellipse(int(500 + Xparallax01),int(700 + Yparallax01), 1700, 500); // main ground
+  // house
+    house(int(600 + Xparallax01), int(350 + Yparallax01));
+  // tree
+    tree(int(200 + Xparallax01), int(350 + Yparallax01));
+    XmainParallax = mouseX - centerX; // gives XmainParallax the distance between the cursor and the center of the window in the x direction
+    YmainParallax = mouseY - centerY; // gives YmainParallax the distance between the cursor and the center of the window in the y direction
+    fill(0);
+}
+/**************************************************************BELOW ARE ALL OF THE METHODS USED IN THE DRAW LOOP********************************************************************/
+
+void sun(int Yparallax) {
+  stroke(0);
+ // on every other revolution, the sun is changed into the moon and the background color is changed
+ if (night % 2 == 1) {
+    background(#1E2639);
+    // the moon is created by using two ellipses where one overlaps the other, giving the cresent shape
+    fill(#D8D2C7);
+    ellipse(x, (200 + Yparallax), 150, 150);
+    noStroke();
+    fill(#1E2639);
+    ellipse(x-40, (200 + Yparallax), 150, 150);
+    stroke(0);
+  }
+  // conditions for daytime and as the x varible changes, the x position of the sun changes
+  else {
+  background(82, 138, 255);
+  fill(255, 237, 33);
+  ellipse(x, (200 + Yparallax), 150, 150);
+  }
+  x -= 5;
+  if (x < -150) {
+    x = 1150;
+    night ++;
+  }
+  strokeWeight(1);
+}
+// 200, 350
+void tree(int treeX, int treeY) {
+  noStroke();
+  translate(treeX, treeY);
+  rotate(radians(-45));
+  fill(#8E3429);
+  rect(-75, 0, 15, 90);
+  rotate(radians(45));
+  translate(-treeX, -treeY);
+  fill(#7E3425);
+  rect(treeX, treeY, 70, 200);
+  fill(#1E812A);
+  ellipse(treeX - 30, treeY - 20, 170, 170);
+  fill(#44C145);
+  ellipse(treeX + 40, treeY - 30, 200, 200);
+  fill(#5A0C0C);
+  ellipse(treeX + 35, treeY + 120, 35, 70); 
+  strokeWeight(1);
+}
+// 600, 350
+void house(int houseX, int houseY) {
+  strokeWeight(1);
+  fill(142, 3, 5);
+  // main square that shoes the front of the house
+  rect(houseX, houseY, 200, 200);
+  // side of the house
+  quad(houseX + 200, houseY, houseX + 200, houseY + 200, houseX + 300, houseY + 150, houseX + 300, houseY - 50);
+  // roof of the house
+  fill(#133867);
+  quad(houseX + 100, houseY - 80, houseX + 200, houseY, houseX + 300, houseY - 50, houseX + 200, houseY - 130);
+  // triangle created between square for house and the roof
+  fill(142, 3, 5);
+  triangle(houseX, houseY, houseX + 200, houseY, houseX + 100, houseY - 80);
+  stroke(142, 3, 5);
+  line(houseX + 1, houseY, houseX + 199, houseY);
+  stroke(0);
+  // door
+  fill(93, 46, 46);
+  rect(houseX + 100, houseY + 100, 40, 100);
+  // doorknob
+  fill(#4D1105);
+  ellipse(houseX + 130, houseY + 150, 5, 5);
+  // window
+  strokeWeight(3);
+  stroke(255);
+  // the if statement changes the color of the window depending on whether it is day or night
+  if (night % 2 == 1) {
+    fill(#000000);
+  }
+  else{
+    fill(#72A9F0);
+  }
+  rect(houseX + 20, houseY + 70, 50, 50);
+  line(houseX + 45, houseY + 70, houseX + 45, houseY + 120);
+  line(houseX + 20, houseY + 95, houseX + 70, houseY + 95);
+  stroke(0);
+  strokeWeight(1); 
+}
+
+void cloud(int xPos, int yPos) {
+  noStroke();
+ // This if statement changes the color of the clouds depending on whether it is day or night
+ if (night % 2 == 0) {
+    fill(255);
+  }
+  else {
+    fill(#C6C6C6);
+  }
+  // This is the cluster of ellipses that make up the clouds
+  ellipse(xPos, yPos, 200, 100);
+  ellipse(xPos + 50, yPos, 150, 150);
+  ellipse(xPos + 100, yPos, 200, 100); 
+  strokeWeight(1);
+  stroke(0);
+}
+
+void bird(int xPos, int yPos) {
+  // if statement that makes the birds appear only in the day
+  if (night % 2 == 0) {
+    // bird 01
+    strokeWeight(4);
+    noFill();
+    stroke(0);
+    // two arcs were used to create the birds
+    arc(xPos + 50, yPos, 100, 100, PI, (3 * PI) / 2);
+    arc(xPos - 50, yPos, 100, 100, (-PI/2),0);
+    strokeWeight(1);
+  }
+}

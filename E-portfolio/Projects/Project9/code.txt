@@ -1,0 +1,145 @@
+int h;
+int w;
+float x = 0;
+float y = 0;
+float z = 0;
+float t = 0; // float used for perlin noise
+float u = 3; // float used for perlin noise
+
+void setup() {
+  size(800, 800);
+  w = width;
+  h = height;
+}
+
+Wedge wedge01;
+
+void draw() {
+  background(255);
+  t += 0.007;
+  u += 0.007;
+  wedge01 = new Wedge(w, h);
+    for (int i = 0; i < 12; i++) { // creates 12 wedges
+      wedge01.create(i);
+    }   
+     wedge01.jitter(-1.55); // makes everything jitter and sets the slope of the boundary lines to -1.55
+}
+class Wedge {
+int w;
+  int h;
+  
+  Wedge(int widths, int heights) {
+    w = widths;
+    h = heights;
+  }
+  // position values of the squares
+  float sqX;
+  float sqY;
+  // position values of the circles
+  float sqXc;
+  float sqYc;
+  // postion values of the triangles  
+  float sqXt;
+  float sqYt;
+  float sqXt1;
+  float sqXt2;
+  float sqYt1;
+
+  void create(int i) {
+    sqXt = h/13;
+    sqYt = h/13;
+    sqXt1 = sqXt + 13;
+    sqXt2 = sqXt + 20;
+    sqYt1 = sqYt + 13;
+    sqX = h/4;
+    sqY = h/4;
+    sqXc = h/6;
+    sqYc = h/6;
+    pushMatrix(); 
+    translate(w/2, h/2);
+    rotate(radians(-30 * i));
+    float y = linear(-1.15, w/2, 0);
+    line(0,0,w,y);
+     pushMatrix(); // the squares
+       rotate(radians(-60));
+         jitter(1.15);
+         colors(0);
+       square(sqX, sqY, h/20);
+         colors(1);
+       circle(sqXc, sqYc, h/30);
+       triangle(sqXt, sqYt, sqXt1, sqYt, sqXt2, sqYt1);
+     popMatrix();
+    popMatrix();
+  }
+  float linear(float m, float x, float b) { // makes a linear line using 3 values
+    return m * x + b;
+  }
+  void jitter(float m) { // makes the objects shake
+    float x = noise(t) * 70;
+    float y = noise(u) * 70;
+    float xi = sqX;
+    float yi = sqY;
+    while (((x + xi) >= w)) { // if the shape is about to go off the screen horizontally, we will change its direction and divide the displacement by 2
+      x *= -1; 
+      x /= 2;
+    }
+    if ((yi + y) >= ((x + xi) * m)) { // if the shape is about to leave its area, we will change its direction and divide the displacement by 2
+      y *= -1;
+      y /= 2;
+    }
+    // adds new values and initial values
+    sqX = xi + x;
+    sqY = yi + y;
+   
+    //circles
+    float xC = noise(t) * 30;
+    float yC = noise(u) * 30;
+    float xiC = sqXc;
+    float yiC = sqYc;
+    while (((xC + xiC) >= w)) {
+      xC *= -1; 
+      xC /= 2;
+    }
+    if ((yiC + yC) >= ((xC + xiC) * m)) {
+      yC *= -1;
+      yC /= 2;
+    }
+    sqXc = xiC + xC;
+    sqYc = yiC + yC;
+    
+    //triangles
+    float xT = noise(t) * 15;
+    float yT = noise(u);
+    float xiT = sqXt;
+    float xiT1 = sqXt1;
+    float xiT2 = sqXt2;
+    float yiT = sqYt;
+    float yiT1 = sqYt1;
+    while (((xT + xiT) >= w) || ((xT + xiT1) >= w) || ((xT + xiT2) >= w)) {
+      xT *= -1; 
+      xT /= 2;
+    }
+    if ((yiT + yT) >= ((xT + xiT) * m) || (yiT1 + yT) >= ((xT + xiT1) * m)) {
+      yT *= -1;
+      yT /= 2;
+    }
+    sqXt = xiT + xT;
+    sqXt1 = xiT1 + xT;
+    sqXt2 = xiT2 + xT;
+    sqYt1 = yiT1 + yT;
+    sqYt = yiT + yT;
+  }
+ 
+  void colors(float add) { // gives the shapes colors using perlin noise
+    x += 0.001 + add;
+    y += 0.001 + add;
+    z += 0.001 + add;
+    float r = noise(x) * 255;
+    float g = noise(x, y) * 255;
+    float b = noise(x, y, z) * 255;
+    fill(r, g, b, 60); 
+    x -= add;
+    y -= add;
+    z -= add;
+  }
+}

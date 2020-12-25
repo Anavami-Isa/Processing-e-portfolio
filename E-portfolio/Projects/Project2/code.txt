@@ -1,0 +1,32 @@
+int high;
+int wide;
+ int n = 0;
+ float t = 0.01;
+ float da = 0.1;
+ float angle = 0;
+void setup() {
+ size(600, 600); 
+ wide = width;
+ high = height;
+}
+
+void draw() {
+  noFill();
+  background(255);
+  pushMatrix();
+  translate(wide/2, high/2);
+  rotate(angle * PI / 180);
+  angle += da;
+  drawCircle(0, 0, wide / 2);
+  popMatrix();
+}
+
+void drawCircle(float x, float y, float radius) {
+  ellipse(x, y, radius, radius);
+  if (radius > 15) {
+    drawCircle(x + radius/2, y, radius/2);
+    drawCircle(x - radius/2, y, radius/2);
+    drawCircle(x, y + radius/2, radius/2);
+    drawCircle(x, y - radius/2, radius/2);
+  }
+}

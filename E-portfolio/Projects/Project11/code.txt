@@ -1,0 +1,87 @@
+PImage img;
+int h;
+int w;
+void setup() {
+ size(500, 500);
+ h = height;
+ w = width;
+ stroke(0);
+ strokeWeight(0.1);
+ fill(0);
+ //img = loadImage("BbyYoda.jpeg");
+ img = loadImage("WillSmith.png");
+ //img = loadImage("Einstein.png");
+ img.resize(0,height);
+ img.filter(GRAY);
+ background(0);
+}
+
+
+float randx = w;
+float randy = h;
+int  choose = int(random(2));
+float x1;
+float y1;
+float x2;
+float y2;
+float[] arr01;
+float[] arr02;
+
+void draw() {
+  frameRate(240);
+  for (int j = 0; j < 3; j++) {
+    drawCircles();
+  }
+}
+void drawCircles() {
+  float[] circles;
+  circles = drawLine();
+  float slope = slopes(circles[0], circles[1], circles[2], circles[3]);
+  int limit = int(sqrt(pow(w,2) + pow(h,2)));
+  for (int i = 0; i < limit; i++) {
+    circles[1] += slope;
+    circles[0] += 1;
+    color c = img.get(int(circles[0]), int(circles[1]));
+    fill(c, 50);
+    circle(circles[0], circles[1], 10); // used to have a width of 10
+  } 
+}
+
+float slopes(float x1, float y1, float x2, float y2) {
+  float m = (x2-x1) / (y2-y1);
+  return m;
+}
+float[]  drawLine() {
+  //background(255);
+  randx = w;
+  randy = h;
+  arr01 = sets();
+  x1 = arr01[0];
+  y1 = arr01[1];
+  randx = w;
+  randy = h;
+  arr02 = sets();
+  x2 = arr02[0];
+  y2 = arr02[1];
+  //line(x1, y1, x2, y2); 
+  float[] arr03 = {x1, y1, x2, y2};
+  return arr03;
+}
+float[] sets() {
+ int bomo = int(random(2));
+ int rand1 = int(random(2));
+ if (bomo == 1) {
+    randx = random(1) * w;
+    randy = neg(rand1, randy);    
+  }
+  else {
+    randy = random(1) * h;
+    randx = neg(rand1, randx); 
+  } 
+  float[] arr = {randx, randy};
+  return arr;
+}
+float neg(int wow, float bop) {
+  bop *= wow;
+  return bop;
+}

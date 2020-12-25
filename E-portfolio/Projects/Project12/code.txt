@@ -1,0 +1,120 @@
+PVector location = new PVector();
+PVector prevLocation = new PVector();
+PVector velocity = new PVector();
+PVector acceleration = new PVector();
+PVector prevVelocity = new PVector();
+PVector prevAcceleration = new PVector();
+PVector mouse;
+PVector prevMouse;
+float magnitude = 1;
+float prevMagnitude = 1;
+float limit = 6;
+float friction = 0.99;
+float prevFriction = 0.99;
+float h;
+float w;
+float returned1;
+float returned2;
+float x;
+float x1;
+
+void setup() {
+  size(800, 600);
+  background(255);
+  h = height;
+  w = width;
+  x = w/2;
+  x1 = x;
+}
+ 
+void draw() {
+  //title of sliders
+  String title01 = "Velocity Magnitude: ";
+  String title02 = "Friction: ";
+  frameRate(240);
+  //sets mouse positon to a vector
+  mouse = new PVector(mouseX, mouseY);
+  prevMouse = new PVector(pmouseX, pmouseY);
+  clears();
+  style();
+  
+  //current Vectors
+  mouse.sub(location);
+  mouse.setMag(magnitude);
+  acceleration = mouse;
+  velocity.add(acceleration);
+  velocity.setMag(velocity.mag() * friction);
+  location.add(velocity);
+  velocity.limit(limit);
+  
+  //prev Vectors- the prev vectors are used to draw the line
+  prevMouse.sub(prevLocation);
+  prevMouse.setMag(prevMagnitude);
+  prevMagnitude = magnitude;
+  prevAcceleration = prevMouse;
+  prevVelocity.add(prevAcceleration);
+  prevVelocity.setMag(prevVelocity.mag() * prevFriction);
+  prevFriction = friction;
+  prevLocation.add(prevVelocity);
+  prevVelocity.limit(limit);
+  if(mouseY < 400) { // the line is drawn if the mouse is clicked and the y value of the mouse positon is less than 400
+    if (mousePressed) {
+      fill(0);
+      line(location.x, location.y, prevLocation.x, prevLocation.y);
+    }
+  }
+  // code that uses the slider function to change the values of velocity magnitude and friction
+  float[] arr01 = {x, magnitude};
+  arr01 = slider(x, magnitude, 400, 100, title01, 5, 1);
+  x = arr01[0];
+  magnitude = arr01[1];
+  arr01 = slider(x1, friction, 500, 100, title02, 1, 0.25);
+  x1 = arr01[0];
+  friction = arr01[1];
+}
+
+void clears() { // clearss the board
+  if (keyPressed) {
+    background(255);
+  }
+}
+
+void style() { // sets the rules for the strokeWeight. The strokeWeight changes based off of the speed magnitude and the speed of the line
+ fill(0);
+ stroke(0);
+ float b = sqrt(pow((velocity.x - prevVelocity.x), 2) + pow((velocity.y - prevVelocity.y), 2)) * (13 - 2 * magnitude )/3;
+ strokeWeight(b);
+ if (b < 1) {
+   b = 1;
+ }
+}
+
+float[] slider (float point, float returned, float startingY, float ht, String title, int y, float z) { // creates sliders
+  if(mousePressed){
+    if((mouseX < w - 50) && (mouseX > 50) && (mouseY > startingY) && (mouseY < startingY + ht)) {
+      point = mouseX;
+      returned = (( ( ( point - 50 ) / ( w - 100 ))) * y) + z;
+    }
+  }
+  fill(180, 180, 180);
+  strokeWeight(1);
+  rect(0, startingY, w, ht);
+  fill(255, 8, 8);
+  strokeWeight(11);
+  stroke(255);
+  line(w / 16, startingY + ht/2, w - w / 16, startingY + ht/2);
+  stroke(0);
+  strokeWeight(10);
+  line(w / 16, startingY + ht/2, w - w / 16, startingY + ht/2);
+  strokeWeight(3);
+  rectMode(CENTER);
+  rect(point, startingY + ht/2, w/30, w/16); 
+  rectMode(CORNER);
+  strokeWeight(1); 
+  String display = title + str(returned);
+  fill(0);
+  textSize(h/30);
+  text(display, 50, startingY + 20);
+  float[] arr = {point, returned};
+  return arr;
+}

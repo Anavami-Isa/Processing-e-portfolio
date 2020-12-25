@@ -1,0 +1,173 @@
+int w; //varibable used to hold the value of the width of the screen
+int h; // variable used to hold to value of the height of the screen
+float day = 0; // variable used to change the color of the sky depending on how long the up arrow is being held
+float dayi = 1; // increment for day variable
+int moveCl = 100; // variable used to move the clouds
+int xch = 0;
+int ych = 0;
+
+//arrays to store the buildings withing the building class
+ArrayList <Building> lefty = new ArrayList <Building>(); // left buildings
+ArrayList <Building> righty = new ArrayList <Building>(); // right buildings
+
+void setup() {
+  size (800, 800); //size of canvas
+  h = height;
+  w = width;
+  background(0, 0, 80);
+  float distL = 0;
+  float distR = 0;
+  for (int i = 0; i < 12; i++) { // for loop that instantiates all of the buildings
+    int floors = int(random (4)) + 3;
+    lefty.add(i, new Building (floors, 3, 0.4 + (i * 0.2), 350 - (16 * i), h/2 + distL));
+    righty.add(i, new Building (floors, 3, 0.4 + (i * 0.2), w - (w * 7)/16 + (16 * i), h/2 + distR));
+    distL += lefty.get(i).getScale() * floors * lefty.get(i).getHt() / (floors * 2); 
+    distR += righty.get(i).getScale() * floors * righty.get(i).getHt() / (floors * 2);
+  }
+}
+
+void draw() {
+  environment();
+  for (int i = 0; i < lefty.size(); i++) { 
+    lefty.get(i).create(); //draws the buildings on the left side of canvas
+    righty.get(i).create();
+  }
+  if (keyPressed && keyCode == UP) {
+    lefty.get(0).move(lefty, false); //creates the movement of the buildings based on arrow key
+    righty.get(0).move(righty, true);
+  }
+}
+
+void environment() {
+  if (moveCl > w-100) { // resets the postion of the clouds
+    moveCl = -200;
+  }
+  if (keyPressed && keyCode == UP) { // if statement that performs actions while the up arrow is pressed
+    day += dayi;
+    moveCl += 1;
+    background(0, 0, 80 + day);
+    if (day > 170 || day < 0) { // resets day
+      dayi *= -1;
+    }
+  } else {
+    background(0, 0, 80 + day); //sets the background when the up arrow key is not pressed
+  }
+  noStroke(); 
+  fill(178, 175, 171);
+  cloud(100, moveCl); // creates clouds
+  cloud(400, moveCl);
+  road(); // method that is used to create the road and ground
+}
+
+void road() {
+  rectMode(CORNER);
+  strokeWeight(1);
+  stroke(0);
+  fill(42, 126, 57);
+  rect(0, h/2, w, h/2); // ground
+  strokeWeight(1);
+  stroke(0);
+  line(0, h/2, w, h/2);
+  fill(82, 82, 82);
+  quad((w / 2) - 160, h, (w / 2) + 160, h, (w / 2) + 10, h/2, (w / 2) - 10, h/2); // road
+  stroke(250, 250, 136);
+  strokeWeight(3);
+  fill(250, 181, 78);
+  //road lines
+  line(w/2, h/2, w/2, h); 
+  line((width / 2) - 155, height, (width / 2) - 5, height/2);
+  line((width / 2) + 155, height, (width / 2) + 5, height/2);
+  stroke(0);
+}
+
+void cloud(int xPos, int yPos) { // creates clouds
+  noStroke();
+  ellipse(xPos, yPos, 100, 50);
+  ellipse(xPos + 50, yPos, 75, 75);
+  ellipse(xPos + 100, yPos, 100, 50); 
+  strokeWeight(1);
+}
+
+class Building {
+float ht; // num of floors on building
+  float winds; // num of windows
+  float scale; // scale at which the size of the building increases by
+  float x; // x position of the building
+  float y; // y positon of the building
+  float winHt; // height of each window
+  float winSpace; // space between windows
+  float dy; // change in y
+  float dx; // change in x
+  float wt;
+  float ht01;
+  Building (float floors, float w, float sc, int x1, float y1) {  //building class
+    ht = floors; 
+    winds = w; 
+    scale = sc; 
+    x = x1; 
+    y = y1; 
+    winHt = 12; 
+    winSpace = 3; 
+    dy = 0; 
+    dx = 0;
+    wt = (((winHt + winSpace) * winds) + winSpace);
+    ht01 = (((winHt + winSpace) * ht) + winSpace);
+  }
+  void create() {
+    noStroke();
+    rectMode(CENTER);
+    fill(144, 143, 143);
+    rect(x + dx, y + dy, scale * wt, scale * ht01); 
+    fill (254, 255, 70);
+    for (int i = 0; i < ht; i++) { // creates windows for each building
+      for (int j = 0; j < winds; j++) {
+        float len01 = x + dx + (scale * (float (j) - ((winds - 1) / 2.0)) * (winHt + winSpace));
+        float len02 = y + dy + (scale * (float (i) - ((ht - 1) / 2.0)) * (winHt + winSpace));
+        rect(len01, len02, scale * winHt, scale * winHt);
+      }
+    }
+  }
+  
+  void move(ArrayList <Building> buildArr, Boolean side) { // moves each building
+    for (int i = 0; i < buildArr.size(); i++) {
+      if (side) {
+        buildArr.get(i).chX(0.3);
+        buildArr.get(i).chY();
+        buildArr.get(i).chScale();
+        if (buildArr.get(i).getY() > (h - 75)) {
+          int floors = int(random (4)) + 3;
+          buildArr.add(0, new Building(floors, 3, 0.4, w - (7 * w)/16, w/2)); 
+          buildArr.remove(buildArr.size() - 1);
+        }
+      } else {
+        buildArr.get(i).chX(-0.3); 
+        buildArr.get(i).chY();
+        buildArr.get(i).chScale();
+        if (buildArr.get(i).getY() > (h - 75)) {
+          int floors = int(random (4)) + 3;
+          buildArr.add(0, new Building(floors, 3, 0.4, (7 * w)/16, w/2));
+          buildArr.remove(buildArr.size() - 1);
+        }
+      }
+    }
+  }
+  // methods used to call and change variables
+  void chX(float x) {
+    dx += x * scale;
+  }
+  void chY() {
+    dy += 0.4 * scale;
+  }
+  void chScale() {
+    scale *= 1.004;
+  }
+  float getY() {
+    return y + dy;
+  }
+  float getHt() {
+    return ht01;
+  }
+  float getScale() {
+    return scale;
+  }
+}
